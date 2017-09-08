@@ -98,7 +98,6 @@ playMusic(e){
       //计算歌词正在播放哪一行
       this.state.lyc.map((v,k)=>{
         if(v[0]==parseInt(audio.currentTime)){
-          clearInterval(timerY)
           this.state.currentTime=v[0]
           if(k!=0){
                 let garget=320-(k*40)
@@ -134,10 +133,24 @@ tipTime(value){
 }
 //onChange改变歌曲播放的时间
 onChange(value) {
-
-
-
-  console.log('onChange: ', value);
+  this.state.scollTime=value
+  let audio=this.refs.audio;
+  this.state.currentTime=value;
+  audio.currentTime=value;
+  this.state.current=this.timeFormat(value);
+  let {current,currentTime,cankao,scollTime}=this.state;
+  this.state.lyc.map((v,k)=>{
+    if(v[0]==parseInt(audio.currentTime)){
+      this.state.currentTime=v[0]
+      if(k!=0){
+            let garget=320-(k*40)
+            this.state.cankao=garget
+            console.log("garget:"+garget)
+      }
+    }
+  })
+  console.log()
+  // console.log('onChange: ', value);
 }
 
 
@@ -158,9 +171,14 @@ setTimeout(()=>{
 }
 render(){
 const { disabled,current,allTime,currentTime,lyY,cankao,playBtn,allTimeSec,scollTime} = this.state;
+console.log(cankao)
 const timerY=setInterval(()=>{
-  if(parseFloat(this.state.lyY)!=this.state.cankao){
+  if(parseFloat(this.state.lyY)>this.state.cankao){
     this.state.lyY=parseFloat(this.state.lyY)-1
+    const {lyY}=this.state;
+    this.setState( {lyY})
+  }else if(parseFloat(this.state.lyY)<this.state.cankao){
+    this.state.lyY=parseFloat(this.state.lyY)+1
     const {lyY}=this.state;
     this.setState( {lyY})
   }
@@ -196,7 +214,7 @@ let list=this.state.lyc.map((v,k)=>{
           </div>
         </div>
         <div className="single-ly">
-          <div className="ly" ref="ly" style={{transform: `translateY(${lyY}px)`}}>
+          <div  key={scollTime} className="ly" ref="ly" style={{transform: `translateY(${lyY}px)`}}>
             {list}
           </div>
         </div>
