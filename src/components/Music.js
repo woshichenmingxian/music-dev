@@ -25,6 +25,7 @@ export default class Music extends Component {
        playBtn:'pause-circle-o',//play图标
        scollTime:0,//滚动条时间
        timeScoll:'',//滚动条定时器
+       timer:'',//歌词定时器
      }
  this.fetchData=this.fetchData.bind(this)
  this.parseLyric=this.parseLyric.bind(this)
@@ -69,11 +70,8 @@ playMusic(e){
   this.state.playFlag=!this.state.playFlag;
   this.state.playFlag ? this.state.playBtn='pause-circle-o':this.state.playBtn='play-circle-o';
   const {playBtn,playFlag} =this.state;
-
-  clearInterval(timer)
-
+  clearInterval(this.state.timer)
   let audio=this.refs.audio;
-  let timer,timerY;
   clearInterval(this.state.timeScoll)
   if(audio.paused){
     audio.play();
@@ -87,12 +85,10 @@ playMusic(e){
       this.setState({scollTime,timeScoll})
 
     },1000)
-
-    console.log(this.state.timeScoll)
     // 处理歌词显示位置
-    timer=setInterval(()=>{
+    this.state.timer=setInterval(()=>{
       if(audio.currentTime==audio.duration){
-        clearInterval(timer)
+        clearInterval(this.state.timer)
       }
       this.state.current=this.timeFormat(audio.currentTime);
       //计算歌词正在播放哪一行
@@ -102,12 +98,11 @@ playMusic(e){
           if(k!=0){
                 let garget=320-(k*40)
                 this.state.cankao=garget
-                console.log("garget:"+garget)
           }
         }
       })
-      const {current,currentTime,cankao}=this.state;
-      this.setState( {current,currentTime,cankao})
+      const {current,currentTime,cankao,timer}=this.state;
+      this.setState( {current,currentTime,cankao,timer})
 
     },1000)
   }else{
@@ -149,8 +144,6 @@ onChange(value) {
       }
     }
   })
-  console.log()
-  // console.log('onChange: ', value);
 }
 
 
@@ -171,7 +164,7 @@ setTimeout(()=>{
 }
 render(){
 const { disabled,current,allTime,currentTime,lyY,cankao,playBtn,allTimeSec,scollTime} = this.state;
-console.log(cankao)
+clearInterval(timerY)
 const timerY=setInterval(()=>{
   if(parseFloat(this.state.lyY)>this.state.cankao){
     this.state.lyY=parseFloat(this.state.lyY)-1
@@ -180,7 +173,7 @@ const timerY=setInterval(()=>{
   }else if(parseFloat(this.state.lyY)<this.state.cankao){
     this.state.lyY=parseFloat(this.state.lyY)+1
     const {lyY}=this.state;
-    this.setState( {lyY})
+    this.setState({lyY})
   }
   else{
     clearInterval(timerY)
@@ -210,7 +203,7 @@ let list=this.state.lyc.map((v,k)=>{
               <div></div>
             </div>
             <div className="name">崔阿扎</div>
-            <div className="time">03:41</div>
+            <div className="time">{allTime}</div>
           </div>
         </div>
         <div className="single-ly">
